@@ -60,7 +60,7 @@ class TD_Advertiser_Init implements ITD_Init
     }
     function init_front_end_resources()
     {
-        wp_enqueue_script('td_ads_jquery',TD_ADVERTISER_PLUGIN_URL.'content/js/jquery-3.3.1.min.js');
+        /*wp_enqueue_script('td_ads_jquery',TD_ADVERTISER_PLUGIN_URL.'content/js/jquery-3.3.1.min.js');
         wp_enqueue_script('td_ads_jquery');
 
         wp_enqueue_script('td_ads_jquery_ui',TD_ADVERTISER_PLUGIN_URL.'content/js/jquery-ui.min.js',array('jquery'),'3.3.1');
@@ -73,7 +73,7 @@ class TD_Advertiser_Init implements ITD_Init
         wp_enqueue_style( 'td_ads_jquery_ui_css' );
 
         wp_register_style( 'td_ads_jquery_theme_css', TD_ADVERTISER_PLUGIN_URL . 'content/css/jquery-ui.theme.min.css');
-        wp_enqueue_style( 'td_ads_jquery_theme_css' );
+        wp_enqueue_style( 'td_ads_jquery_theme_css' );*/
 
         wp_register_style('td_ads-css',TD_ADVERTISER_PLUGIN_URL.'content/css/td_ads_custom.css');
         wp_enqueue_style('td_ads-css');
