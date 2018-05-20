@@ -1,0 +1,28 @@
+@import "../vars/admin_ads_vars";
+.table-ads-banner-list{
+  thead{
+    th:not(:first-child){
+      text-align:center;
+    }
+    th {
+      white-space:nowrap;
+      &#title{
+        width:200px;
+      }
+      &#zone{
+        width:200px;
+      }
+      &#location {
+
+      }
+      &#views{
+
+      }
+    }
+  }
+  tbody{
+    td:not(:first-child){
+      text-align:center;
+    }
+  }
+}

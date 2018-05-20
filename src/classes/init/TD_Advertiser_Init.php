@@ -3,6 +3,7 @@
 
 namespace TD_Advertiser\src\classes\init;
 
+use TD_Advertiser\src\classes\TD_Advertiser_Base;
 use TD_Advertiser\src\short_codes\TD_Ads_Short_Codes;
 
 class TD_Advertiser_Init implements ITD_Init
@@ -10,12 +11,16 @@ class TD_Advertiser_Init implements ITD_Init
     private static $instance;
     private $post_type="td-advertiser";
     /**
+     * @var TD_Advertiser_Base
+     */
+    private $nav_init;
+    /**
      * TD_Advertiser_Init constructor.
      */
     public function __construct()
     {
         TD_Ads_Short_Codes::getInstance()->init();
-
+        $this->nav_init = TD_Advertiser_Navigation_Init::getInstance();
     }
 
     public static function getInstance()
@@ -47,15 +52,28 @@ class TD_Advertiser_Init implements ITD_Init
 
     function init_admin_menu()
     {
-
+        $this->nav_init->init();
     }
 
     function init_admin_resources()
     {
+        wp_register_style( 'hf_billing_jquery_css', TD_ADVERTISER_PLUGIN_URL . 'content/css/jquery-ui.min.css');
+        wp_enqueue_style( 'hf_billing_jquery_css' );
+        wp_register_style( 'hf_billing_jquery_theme_css', TD_ADVERTISER_PLUGIN_URL . 'content/css/jquery-ui.theme.min.css');
+        wp_enqueue_style( 'hf_billing_jquery_theme_css' );
+
+        wp_enqueue_style('td_ads_admin-datatables-css',TD_ADVERTISER_PLUGIN_URL.'content/css/jquery.dataTables.min.css');
+
         wp_register_style('td_ads_admin-css',TD_ADVERTISER_PLUGIN_URL.'content/css/td_ads_admin_style.css');
         wp_enqueue_style('td_ads_admin-css');
-        //wp_register_script('td_ads_admin-js',TD_ADVERTISER_PLUGIN_URL.'content/js/td_advertiser.js');
-       // wp_enqueue_script('td_ads_admin-js');
+
+        wp_enqueue_script('td_ads_admin_jquery_ui',TD_ADVERTISER_PLUGIN_URL.'content/js/jquery-ui.min.js',array('jquery'),'3.2.1');
+        wp_enqueue_script('td_ads_admin_jquery_ui');
+        wp_register_script('td_ads_admin-dataTables-js',TD_ADVERTISER_PLUGIN_URL.'content/js/dataTables/jquery.dataTables.min.js',array('jquery'),'3.2.1');
+        wp_enqueue_script('td_ads_admin-dataTables-js');
+
+        wp_register_script('td_ads_admin-js',TD_ADVERTISER_PLUGIN_URL.'content/js/td_admin_advertiser.js');
+        wp_enqueue_script('td_ads_admin-js');
 
     }
     function init_front_end_resources()

@@ -75,6 +75,8 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
     private  function show_layout()
     {
 
+        global $wp_query;
+        var_dump($wp_query->post);
         $zone = get_term($this->params['ads_zone'],'td_ads_zone');
         $this->params['banner_obj_ID']=null;
         $this->params['zone_obj']=null;

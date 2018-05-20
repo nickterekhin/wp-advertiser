@@ -35,12 +35,7 @@ class TD_Ads_Short_Codes
 
     function vc_integration()
     {
-        vc_add_shortcode_param('ads_banner_type',function($settings, $value)
-        {
-            /*  $html = '<div class="td-ads-banner-type-container">';
-              $html.='<select name="'.$settings['param_name'].'" class="wpb_vc_param_value wpb-input wpb-select">';*/
-            return '<h3>hello</h3>';
-        });
+
         $this->short_codes[] = new TD_Ads_Set_Single_Zone();
 
         foreach($this->short_codes as $sc)

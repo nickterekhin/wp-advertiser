@@ -1,2 +1,10 @@
-pre {
-  margin-left: 180px; }
+.table-ads-banner-list thead th:not(:first-child) {
+  text-align: center; }
+.table-ads-banner-list thead th {
+  white-space: nowrap; }
+  .table-ads-banner-list thead th#title {
+    width: 200px; }
+  .table-ads-banner-list thead th#zone {
+    width: 200px; }
+.table-ads-banner-list tbody td:not(:first-child) {
+  text-align: center; }
