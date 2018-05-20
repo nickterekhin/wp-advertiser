@@ -83,7 +83,7 @@ class Banners extends Repository implements IBanners
         $banners->setBannerEndDate(get_field('banner_end_date',$res->ID));
         $banners->setBannerStatus(get_field('banner_status',$res->ID));
         $banners->setPricePerView(get_field('banner_price_per_view',$res->ID));
-        $banners->setViews(get_field('banners_views',$res->ID));
+        $banners->setViews(get_field('banner_views',$res->ID));
         return $banners;
     }
 }

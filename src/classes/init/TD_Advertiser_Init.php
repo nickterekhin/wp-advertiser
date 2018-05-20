@@ -3,13 +3,17 @@
 
 namespace TD_Advertiser\src\classes\init;
 
+use TD_Advertiser\src\classes\init\single_metabox\Taxonomy_Single_Term;
 use TD_Advertiser\src\classes\TD_Advertiser_Base;
+use TD_Advertiser\src\classes\TD_Settings;
 use TD_Advertiser\src\short_codes\TD_Ads_Short_Codes;
 
 class TD_Advertiser_Init implements ITD_Init
 {
     private static $instance;
     private $post_type="td-advertiser";
+    private $settings;
+    private $zones;
     /**
      * @var TD_Advertiser_Base
      */
@@ -21,6 +25,9 @@ class TD_Advertiser_Init implements ITD_Init
     {
         TD_Ads_Short_Codes::getInstance()->init();
         $this->nav_init = TD_Advertiser_Navigation_Init::getInstance();
+        $this->settings = TD_Settings::getInstance();
+        $this->zones = array();
+
     }
 
     public static function getInstance()
@@ -34,7 +41,8 @@ class TD_Advertiser_Init implements ITD_Init
 
     function init()
     {
-
+        $custom_tax_mb = new Taxonomy_Single_Term( 'td_ads_zone' );
+        $custom_tax_mb->priority='low';
         add_action('init',array($this,"init_post_type"),8);
 
         add_action('wp_enqueue_scripts',array($this,'init_front_end_resources'),20);
@@ -44,9 +52,40 @@ class TD_Advertiser_Init implements ITD_Init
             add_action('admin_enqueue_scripts',array($this,'init_admin_resources'),11);
             add_action('admin_menu',array($this,'init_admin_menu'));
             add_action('do_meta_boxes', array($this,'remove_meta_boxes'));
+            add_action('save_post',array($this,'save_banner_post'),10,3);
         }
 
 
+    }
+
+    function save_banner_post($post_id,$post,$update)
+    {
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+            return;
+
+        $post_type = get_post_type($post_id);
+        if($post_type!=$this->settings->getPostTypeName()) return;
+
+
+        if(!$update)
+            update_post_meta($post_id,'banner_views',0);
+
+        $post_zones_ids = wp_get_post_terms($post_id,'td_ads_zone',array('fields'=>'ids'));
+
+        $this->zones = get_post_meta($post_id,'banner_view_markers',true);
+
+
+        $current_zones = array();
+        foreach($post_zones_ids as $v)
+        {
+            $current_zones[$v]=0;
+            if(array_key_exists($v,$this->zones))
+            {
+                $current_zones[$v]=$this->zones[$v];
+            }
+        }
+
+        update_post_meta($post_id,'banner_view_markers',$current_zones);
     }
 
 
@@ -103,6 +142,7 @@ class TD_Advertiser_Init implements ITD_Init
         global $wp_meta_boxes;
 
         remove_meta_box('mymetabox_revslider_0',$this->post_type,'normal');
+        //remove_meta_box('td_ads_zonediv',$this->post_type,'side');
     }
     function init_post_type()
     {
