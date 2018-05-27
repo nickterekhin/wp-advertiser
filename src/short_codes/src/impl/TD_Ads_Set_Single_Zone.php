@@ -5,7 +5,9 @@ namespace TD_Advertiser\src\short_codes\src\impl;
 
 
 use TD_Advertiser\src\short_codes\src\TD_Ads_Short_Codes_Base;
+use WP_Post;
 use WP_Query;
+use WP_Term;
 
 class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
 {
@@ -25,34 +27,17 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
 
     function base_params()
     {
-        $zones['default']='';
-        $zones = array_merge($zones,$this->get_ads_zones_list());
+        $zones = $this->get_ads_zones_list();
 
         $params_sc = array();
         $params_sc[] = array (
             'type' =>'dropdown' ,
-            'heading' =>'Select Zones' ,
+            'heading' =>'Select Zone' ,
             'param_name' =>'ads_zone' ,
             'value'=>$zones,
             'save_always' => true,
             'description' =>'Select Zone what banners have to be shown',
         );
-
-        $params_sc[] = array(
-            'type'=>'textfield',
-            'heading'=>'Select Banner',
-            'param_name'=>'ads_banner',
-            'description'=>'Enter the ID of the banner you want to display in selected zone',
-            'value'=>'',
-            'dependency'=>array(
-                'element'=>'ads_zone',
-                'value'=>array_values(array_filter($zones,function($e){return !empty($e);})),
-
-           )
-        );
-
-        //var_dump($params_sc[1]['dependency']);
-
 
         return $params_sc;
 
@@ -65,43 +50,73 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
         );
        $terms =  get_terms($args);
 
-        $zones = array();
-        foreach($terms as $k=>$v)
-        {
-            $zones[$v]=''.$k;
-        }
+        //var_dump(array_flip($terms));
+        $zones = array_flip($terms);
+
         return $zones;
     }
     private  function show_layout()
     {
-
         global $wp_query;
-        var_dump($wp_query->post);
-        $zone = get_term($this->params['ads_zone'],'td_ads_zone');
-        $this->params['banner_obj_ID']=null;
+     //   var_dump($wp_query);
+
+  //      $current_location = $wp_query->posts;
+
+//        $zone = get_term($this->params['ads_zone'],'td_ads_zone');
+       /* $this->params['banner_obj_ID']=null;
         $this->params['zone_obj']=null;
         if($zone)
         {
             $this->params['zone_obj']=$zone;
         $args = array(
                 'post_type' => 'td-advertiser',
-                'posts_per_page' => '1',
+                'posts_per_page' => '-1',
                 'td_ads_zone' => $zone->slug,
                 'orderby'=>'date',
                 'order' => 'DESC',
                 'post_status' => 'publish',
             );
-            if(isset($this->params['ads_banner']) && !empty($this->params['ads_banner']))
-                $args['p']=$this->params['ads_banner'];
 
             $query = new WP_Query($args);
             wp_reset_postdata();
 
+
             if($query->post_count>0)
-                $this->params['banner_obj_ID'] = $query->post->ID;
+                $this->params['banner_obj_ID'] = $query->posts;
+        }*/
+        $obj = get_queried_object();
+      //  var_dump($obj);
+       // var_dump(is_single($obj->ID));
+        $res = $wp_query->post;
+        $args = array('location'=>'all');
+        if($obj instanceof WP_Post && $obj->post_type=='page')
+        {
+            $args['location']='page';
+            $args['obj_id']=$res->ID;
         }
+        elseif($obj instanceof WP_Post && is_single($res->ID) && $res->post_type=='post')
+        {
+            $args['location']='single';
+        }
+        elseif($obj instanceof WP_Term && $obj->taxonomy=='category')
+        {
+            $args['location']='category';
+            $args['obj_id']=$obj->term_id;
+        }
+        $res = $this->db->getBanners()->getMarkedBannerInZoneAndLocation($this->params['ads_zone'],$args);
+        //set view+=1
+        //set next marker 1
+
+      //  var_dump($res);
+        $this->params['banner']=$res;
         return $this->View('single_layout',array_merge(array('obj'=>$this),$this->params));
     }
 
+    private function getMarkedBanner()
+    {
+
+
+
+    }
 
 }

@@ -4,6 +4,8 @@
 namespace TD_Advertiser\src\short_codes\src;
 
 
+use TD_Advertiser\src\repository\DBContext;
+
 abstract class TD_Ads_Short_Codes_Base implements ITD_Ads
 {
     protected $default_options = array(
@@ -15,6 +17,7 @@ abstract class TD_Ads_Short_Codes_Base implements ITD_Ads
     protected $short_code_category = 'TD ADS';
     protected $short_code_title;
     protected $params=array();
+    protected $db;
 
     /**
      * TD_Ads_Short_Codes_Base constructor.
@@ -23,6 +26,8 @@ abstract class TD_Ads_Short_Codes_Base implements ITD_Ads
      */
     public function __construct($short_code_slug,$short_code_category=null)
     {
+
+        $this->db=DBContext::getInstance();
         if($short_code_category)
             $this->short_code_category = $short_code_category;
         $this->short_code_slug = $short_code_slug;

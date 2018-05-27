@@ -56,8 +56,114 @@ class Banners extends Repository implements IBanners
 
     function getById($id)
     {
-        // TODO: Implement getById() method.
+        $sql = $this->db->prepare("SELECT p.*,tr.term_taxonomy_id as zone_id FROM wp_posts p INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id WHERE p.ID=%d",$id);
+        $res = $this->db->get_row($sql);
+        if($res)
+            return $this->mapping($res);
+        return null;
     }
+
+    function getMarkedBannerInZone($zone_id)
+    {
+
+        $sql = $this->db->prepare("SELECT p.*,tr.term_taxonomy_id as zone_id FROM wp_posts p
+INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_view_markers'
+INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id
+WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
+
+        $res = $this->db->get_row($sql);
+
+       if($res)
+           return $this->mapping($res);
+        return null;
+    }
+
+    function getMarkedBannerInZoneAndLocation($zone_id, $args = array())
+    {
+        $inner_join='';
+        $where='';
+            switch($args['location'])
+            {
+                case 'single':
+                    $inner_join = " INNER JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_position'";
+                    $where =" AND (pm1.meta_value='single' OR pm1.meta_value='all')";
+                    break;
+                case 'page':
+                    $inner_join = "
+                    INNER JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_position'
+                    INNER JOIN wp_postmeta pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'banner_page'
+                    ";
+                    $where =" AND (pm1.meta_value='page' AND pm2.meta_value=".$args['obj_id'].") OR pm1.meta_value='all')";
+                    break;
+                case 'category':
+                    $inner_join = "
+                    INNER JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_position'
+                    INNER JOIN wp_postmeta pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'banner_category'
+                    ";
+                    $where =" AND ((pm1.meta_value='page' AND pm2.meta_value=".$args['obj_id'].") OR pm1.meta_value='all')";
+                    break;
+            }
+
+        $sql = $this->db->prepare("SELECT p.*,tr.term_taxonomy_id as zone_id FROM wp_posts p
+INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_view_markers'
+".$inner_join."
+INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id
+WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d ORDER BY p.post_date DESC".$where,$zone_id);
+
+        $res = $this->db->get_row($sql);
+
+        if($res)
+            return $this->mapping($res);
+        return null;
+    }
+
+    function setViewsById($banner_id)
+    {
+        $views = get_post_meta($banner_id,'banner_views',true);
+        $views+=1;
+        update_post_meta($banner_id,'banner_views',$views);
+    }
+
+    function moveMarker($current_banner_id)
+    {
+        $current_banner = $this->getById($current_banner_id);
+
+        if($banner = $this->getNextBanner($current_banner->getZoneId(),$current_banner->getCreatedAt()->format('Y-m-d')))
+        {
+            update_post_meta($banner->getId(),'banner_view_marker',1);
+        }
+    }
+
+    function getNextBanner($zone_id,$create_date)
+    {
+        $sql = $this->db->prepare("SELECT p.*,tr.term_taxonomy_id as zone_id FROM wp_post p
+ INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_view_markers'
+  INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id WHERE tr.term_taxonomy_id=%d AND pm.meta_value=0 p.post_date>%s ORDER BY p.post_date DESC LIMIT 1",$zone_id,$create_date);
+        $res = $this->db->get_row($sql);
+        if($res) {
+            $sql = $this->db->prepare("SELECT p.*,tr.term_taxonomy_id as zone_id FROM wp_post p
+ INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_view_markers'
+  INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id WHERE tr.term_taxonomy_id=%d AND pm.meta_value=0 ORDER BY p.post_date DESC LIMIT 1",$zone_id,$create_date);
+            $res = $this->db->get_row($sql);
+            if($res)
+            {
+                return $this->mapping($res);
+            }
+        }
+
+        return null;
+    }
+
+    function getZoneIdByBannerId($banner_id)
+    {
+        $sql = $this->db->prepare("SELECT tr.term_taxonomy_id as zone_id FROM wp_post p
+  INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id WHERE p.ID=%d ORDER BY p.post_date DESC LIMIT 1",$banner_id);
+        $res = $this->db->get_row($sql);
+        if($res)
+            return $res->zone_id;
+        return null;
+    }
+
 
     /**
      * @param WP_Post $res
@@ -84,6 +190,7 @@ class Banners extends Repository implements IBanners
         $banners->setBannerStatus(get_field('banner_status',$res->ID));
         $banners->setPricePerView(get_field('banner_price_per_view',$res->ID));
         $banners->setViews(get_field('banner_views',$res->ID));
+        $banners->setZoneId($res->zone_id);
         return $banners;
     }
 }

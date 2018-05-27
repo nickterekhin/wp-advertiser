@@ -66,26 +66,22 @@ class TD_Advertiser_Init implements ITD_Init
         $post_type = get_post_type($post_id);
         if($post_type!=$this->settings->getPostTypeName()) return;
 
+        $zones = wp_get_post_terms($post_id,'td_ads_zone',array('fields'=>'ids'));
+        $marker = 0;
+
+        if(!is_wp_error($zones) && count($zones)>0) {
+
+            $res = $this->nav_init->getDbCtx()->getBanners()->getMarkedBannerInZone($zones[0]);
+
+            if(!$res)
+                $marker = 1;
+        }
 
         if(!$update)
             update_post_meta($post_id,'banner_views',0);
 
-        $post_zones_ids = wp_get_post_terms($post_id,'td_ads_zone',array('fields'=>'ids'));
-
-        $this->zones = get_post_meta($post_id,'banner_view_markers',true);
-
-
-        $current_zones = array();
-        foreach($post_zones_ids as $v)
-        {
-            $current_zones[$v]=0;
-            if(array_key_exists($v,$this->zones))
-            {
-                $current_zones[$v]=$this->zones[$v];
-            }
-        }
-
-        update_post_meta($post_id,'banner_view_markers',$current_zones);
+        if(!$update)
+            update_post_meta($post_id,'banner_view_markers',$marker);
     }
 
 

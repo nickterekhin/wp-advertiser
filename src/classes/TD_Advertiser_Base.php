@@ -50,4 +50,14 @@ abstract class TD_Advertiser_Base
         return isset($_REQUEST['page']) && !empty($_REQUEST['page']) && array_key_exists($_REQUEST['page'],$_menu_hooks);
 
     }
+
+    /**
+     * @return DBContext
+     */
+    public function getDbCtx()
+    {
+        return $this->db_ctx;
+    }
+
+
 }

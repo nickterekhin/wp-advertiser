@@ -86,6 +86,8 @@ class Banner extends AdsObject
      */
     private $views = 0;
 
+    private $zone_id;
+
     /**
      * @return int
      */
@@ -372,6 +374,22 @@ class Banner extends AdsObject
     public function setViews($views)
     {
         $this->views = $views?$views+0:0;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getZoneId()
+    {
+        return $this->zone_id;
+    }
+
+    /**
+     * @param mixed $zone_id
+     */
+    public function setZoneId($zone_id)
+    {
+        $this->zone_id = $zone_id;
     }
 
 
