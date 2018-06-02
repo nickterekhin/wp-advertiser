@@ -3,4 +3,17 @@
 .td-ads-zone-container{
   position: relative;
   display:inline-block;
+  margin:0 auto;
+  overflow: hidden;
+  &.aside-ads{
+    width:100%;
+    max-height:250px;
+    .td-banner{
+      display:none;
+    }
+  }
+  .td-banner{
+    /*display:none;*/
+    position:relative;
+  }
 }

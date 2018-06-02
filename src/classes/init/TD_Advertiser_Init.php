@@ -128,6 +128,9 @@ class TD_Advertiser_Init implements ITD_Init
         wp_register_style( 'td_ads_jquery_theme_css', TD_ADVERTISER_PLUGIN_URL . 'content/css/jquery-ui.theme.min.css');
         wp_enqueue_style( 'td_ads_jquery_theme_css' );*/
 
+        wp_register_script('td_ads_rotator-js',TD_ADVERTISER_PLUGIN_URL.'content/js/td_ads_rotator.js');
+        wp_enqueue_script('td_ads_rotator-js');
+
         wp_register_style('td_ads-css',TD_ADVERTISER_PLUGIN_URL.'content/css/td_ads_custom.css');
         wp_enqueue_style('td_ads-css');
 

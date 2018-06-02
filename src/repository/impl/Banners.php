@@ -85,36 +85,39 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
             switch($args['location'])
             {
                 case 'single':
-                    $inner_join = " INNER JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_position'";
-                    $where =" AND (pm1.meta_value='single' OR pm1.meta_value='all')";
+                    $inner_join = " INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'";
+                    $where =" AND (pm.meta_value='single' OR pm.meta_value='all')";
                     break;
                 case 'page':
                     $inner_join = "
-                    INNER JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_position'
-                    INNER JOIN wp_postmeta pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'banner_page'
+                    INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'
+                    LEFT JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_page'
                     ";
-                    $where =" AND (pm1.meta_value='page' AND pm2.meta_value=".$args['obj_id'].") OR pm1.meta_value='all')";
+                    $where =" AND ((pm.meta_value='page' AND pm1.meta_value=".$args['obj_id'].") OR pm.meta_value='all')";
                     break;
                 case 'category':
                     $inner_join = "
-                    INNER JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_position'
-                    INNER JOIN wp_postmeta pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'banner_category'
+                    INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'
+                    LEFT JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_category'
                     ";
-                    $where =" AND ((pm1.meta_value='page' AND pm2.meta_value=".$args['obj_id'].") OR pm1.meta_value='all')";
+                    $where =" AND ((pm.meta_value='page' AND pm1.meta_value=".$args['obj_id'].") OR pm.meta_value='all')";
                     break;
             }
 
         $sql = $this->db->prepare("SELECT p.*,tr.term_taxonomy_id as zone_id FROM wp_posts p
-INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_view_markers'
-".$inner_join."
+        ".$inner_join."
 INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id
-WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d ORDER BY p.post_date DESC".$where,$zone_id);
+WHERE tr.term_taxonomy_id=%d ".$where." ORDER BY pm.meta_key DESC, p.post_date DESC",$zone_id);
+        $res = $this->db->get_results($sql);
 
-        $res = $this->db->get_row($sql);
+        $banners = array();
 
-        if($res)
-            return $this->mapping($res);
-        return null;
+            foreach ($res as $r) {
+                $banners[] = $this->mapping($r);
+            }
+
+
+        return $banners;
     }
 
     function setViewsById($banner_id)

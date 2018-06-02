@@ -46,7 +46,8 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
     {
         $args = array(
             'taxonomy'=>'td_ads_zone',
-            'fields'=>'id=>name'
+            'fields'=>'id=>name',
+            'hide_empty' => false,
         );
        $terms =  get_terms($args);
 
@@ -58,35 +59,9 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
     private  function show_layout()
     {
         global $wp_query;
-     //   var_dump($wp_query);
 
-  //      $current_location = $wp_query->posts;
-
-//        $zone = get_term($this->params['ads_zone'],'td_ads_zone');
-       /* $this->params['banner_obj_ID']=null;
-        $this->params['zone_obj']=null;
-        if($zone)
-        {
-            $this->params['zone_obj']=$zone;
-        $args = array(
-                'post_type' => 'td-advertiser',
-                'posts_per_page' => '-1',
-                'td_ads_zone' => $zone->slug,
-                'orderby'=>'date',
-                'order' => 'DESC',
-                'post_status' => 'publish',
-            );
-
-            $query = new WP_Query($args);
-            wp_reset_postdata();
-
-
-            if($query->post_count>0)
-                $this->params['banner_obj_ID'] = $query->posts;
-        }*/
         $obj = get_queried_object();
-      //  var_dump($obj);
-       // var_dump(is_single($obj->ID));
+
         $res = $wp_query->post;
         $args = array('location'=>'all');
         if($obj instanceof WP_Post && $obj->post_type=='page')
@@ -103,12 +78,14 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
             $args['location']='category';
             $args['obj_id']=$obj->term_id;
         }
+
         $res = $this->db->getBanners()->getMarkedBannerInZoneAndLocation($this->params['ads_zone'],$args);
+
         //set view+=1
         //set next marker 1
 
-      //  var_dump($res);
-        $this->params['banner']=$res;
+       //var_dump($res);
+        $this->params['banners']=$res;
         return $this->View('single_layout',array_merge(array('obj'=>$this),$this->params));
     }
 

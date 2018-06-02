@@ -1,6 +1,16 @@
 .td-ads-zone-container {
   position: relative;
-  display: inline-block; }
+  display: inline-block;
+  margin: 0 auto;
+  overflow: hidden; }
+  .td-ads-zone-container.aside-ads {
+    width: 100%;
+    max-height: 250px; }
+    .td-ads-zone-container.aside-ads .td-banner {
+      display: none; }
+  .td-ads-zone-container .td-banner {
+    /*display:none;*/
+    position: relative; }
 
 pre {
   margin-left: 180px; }
