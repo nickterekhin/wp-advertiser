@@ -18,6 +18,13 @@ class TD_Advertiser_Banners_List_Manager extends TD_Advertiser_Base_Manager
         $this->settings->setParamsBy('table_obj', new TD_Advertiser_Banners_List_Table(array('post_type'=>$this->settings->getPostTypeName(),'dbc'=>$this->db_ctx)));
     }
 
+    protected function delete($id)
+    {
+        $this->db_ctx->getBanners()->delete($id);
+        $this->showMessage('success','Banner Has been deleted successfully');
+    }
+
+
     public function init_manager_routes()
     {
         $this->init_routes();

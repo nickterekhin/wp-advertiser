@@ -41,7 +41,10 @@ class TD_Advertiser_Navigation_Init extends TD_Advertiser_Base implements INavig
 
     function admin_menu_request_handler()
     {
-
+        if(($this->isSave() || ($this->isObjectId() && $this->isAction())) && $this->isPage()) {
+            if($this->manager)
+                $this->manager->redirect_handler();
+        }
     }
     function show_notifications()
     {

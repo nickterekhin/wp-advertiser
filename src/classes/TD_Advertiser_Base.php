@@ -14,6 +14,11 @@ abstract class TD_Advertiser_Base
      */
     protected $db_ctx;
 
+    private $default_actions = array(
+        'del',
+        'add'
+    );
+
     /**
      * @var TD_Settings
      */
@@ -32,6 +37,17 @@ abstract class TD_Advertiser_Base
             self::$_instances[$class] = new $class();
         }
         return self::$_instances[$class];
+    }
+    protected function isAction()
+    {
+        $action =$_REQUEST['a'];
+        if(isset($action)) {
+            if(in_array($action,$this->default_actions))
+                return true;
+        }
+
+        return false;
+
     }
     protected function isSave()
     {

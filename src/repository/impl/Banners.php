@@ -32,7 +32,7 @@ class Banners extends Repository implements IBanners
 
     function delete($id)
     {
-        // TODO: Implement delete() method.
+        wp_delete_post($id);
     }
 
     function getAll($args = array())
@@ -80,34 +80,42 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
 
     function getMarkedBannerInZoneAndLocation($zone_id, $args = array())
     {
-        $inner_join='';
-        $where='';
+        $inner_join="   LEFT JOIN wp_postmeta pm3 ON p.ID = pm3.post_id AND pm3.meta_key='banner_start_date'
+                        LEFT JOIN wp_postmeta pm4 ON p.ID = pm4.post_id AND pm4.meta_key='banner_end_date' ";
+        $where='tr.term_taxonomy_id='.$zone_id.' AND ((pm3.meta_value <= CURDATE() AND pm4.meta_value >=CURDATE()) OR (pm3.meta_value Is NULL OR pm4.meta_value Is NULL))';
             switch($args['location'])
             {
                 case 'single':
-                    $inner_join = " INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'";
-                    $where =" AND (pm.meta_value='single' OR pm.meta_value='all')";
+                    $inner_join .= " INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'";
+                    $where .=" AND (pm.meta_value='single' OR pm.meta_value='all')";
                     break;
                 case 'page':
-                    $inner_join = "
+                    $inner_join .= "
                     INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'
                     LEFT JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_page'
                     ";
-                    $where =" AND ((pm.meta_value='page' AND pm1.meta_value=".$args['obj_id'].") OR pm.meta_value='all')";
+                    $where .=" AND ((pm.meta_value='page' AND pm1.meta_value=".$args['obj_id'].") OR pm.meta_value='all')";
                     break;
                 case 'category':
                     $inner_join = "
                     INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'
                     LEFT JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_category'
                     ";
-                    $where =" AND ((pm.meta_value='page' AND pm1.meta_value=".$args['obj_id'].") OR pm.meta_value='all')";
+                    $where .=" AND ((pm.meta_value='page' AND pm1.meta_value=".$args['obj_id'].") OR pm.meta_value='all')";
                     break;
             }
 
-        $sql = $this->db->prepare("SELECT p.*,tr.term_taxonomy_id as zone_id FROM wp_posts p
-        ".$inner_join."
-INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id
-WHERE tr.term_taxonomy_id=%d ".$where." ORDER BY pm.meta_key DESC, p.post_date DESC",$zone_id);
+            if(isset($args['show_on']))
+            {
+                $inner_join .= " LEFT JOIN wp_postmeta pm2 ON p.ID = pm2.post_id AND pm2.meta_key='banner_show_on'";
+                $where .= " AND pm2.meta_value LIKE '%".$args['show_on']."%'";
+            }
+
+
+        $sql = "SELECT p.*,tr.term_taxonomy_id as zone_id FROM wp_posts p ".$inner_join."
+
+        INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id WHERE ".$where." ORDER BY pm.meta_key DESC, p.post_date DESC";
+        //print_r($sql);
         $res = $this->db->get_results($sql);
 
         $banners = array();
@@ -188,8 +196,8 @@ WHERE tr.term_taxonomy_id=%d ".$where." ORDER BY pm.meta_key DESC, p.post_date D
         $banners->setBannerPosition(get_post_meta($res->ID,'banner_position',true));
         $banners->setBannerLocationId(get_field('banner_'.$banners->getBannerPosition(),$res->ID));
         $banners->setBannerDatesLimits(get_field('banner_dates_limits',$res->ID));
-        $banners->setBannerStartDate(get_field('banner_start_date',$res->ID));
-        $banners->setBannerEndDate(get_field('banner_end_date',$res->ID));
+        $banners->setBannerStartDate(get_field('banner_start_date',$res->ID)?new DateTime(get_field('banner_start_date',$res->ID)):null);
+        $banners->setBannerEndDate(get_field('banner_end_date',$res->ID)?new DateTime(get_field('banner_end_date',$res->ID)):null);
         $banners->setBannerStatus(get_field('banner_status',$res->ID));
         $banners->setPricePerView(get_field('banner_price_per_view',$res->ID));
         $banners->setViews(get_field('banner_views',$res->ID));

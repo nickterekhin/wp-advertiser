@@ -60,10 +60,11 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
     {
         global $wp_query;
 
+
         $obj = get_queried_object();
 
         $res = $wp_query->post;
-        $args = array('location'=>'all');
+        $args = array('location'=>'all','show_on'=>'desktop');
         if($obj instanceof WP_Post && $obj->post_type=='page')
         {
             $args['location']='page';
@@ -79,6 +80,13 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
             $args['obj_id']=$obj->term_id;
         }
 
+        if($this->detect_device->isMobile())
+        {
+            $args['show_on'] = 'mobile';
+        }else if($this->detect_device->isTablet())
+        {
+            $args['show_on'] = 'tablets';
+        }
         $res = $this->db->getBanners()->getMarkedBannerInZoneAndLocation($this->params['ads_zone'],$args);
 
         //set view+=1

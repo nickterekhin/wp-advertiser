@@ -15,12 +15,16 @@ abstract class TD_Advertiser_Base_Manager extends TD_Advertiser_Base
     }
     public abstract function init_manager_routes();
     protected abstract function show();
+    protected abstract function delete($id);
     protected function init_routes()
     {
         $_REQUEST['a'] = (isset($_REQUEST['a']) && !empty($_REQUEST['a'])) ? $_REQUEST['a'] : 'show';
         switch($_REQUEST['a']) {
             case 'show':
                 $this->show();
+                break;
+            case 'del':
+                $this->delete($_REQUEST['id']);
                 break;
         }
     }

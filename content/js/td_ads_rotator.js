@@ -1,64 +1,99 @@
-(function($,obj){
+(function($){
     'use strict';
+    $.fn.shuffle = function() {
+        return this.each(function(){
+            var items = $(this).children().clone(true);
+            return (items.length) ? $(this).html($.shuffle(items)) : this;
+        });
+    };
 
-    obj.defaults = {
-        opts:{
-            container:'#td-banner-viewer',
-            banner_item:'.td-banner'
+    $.shuffle = function(arr) {
+        for(var j, x, i = arr.length; i; j = parseInt(Math.random() * i), x = arr[--i], arr[i] = arr[j], arr[j] = x);
+        return arr;
+    };
+
+    $.extend($.fn,{
+        bannerRotator:function(options){
+            var rotator = $.data(this[0],"rotator");
+            if(rotator)
+            {
+                return rotator;
+            }
+            rotator = new banner(options,this[0]);
+
+            return rotator;
         }
-    };
+    });
 
-     obj.$banners = null;
-        obj.$container = null;
-        obj.active_banner=0;
-
-    obj.init = function()
+    var banner = function(options,rotator)
     {
-        var opt = $.extend({},obj.defaults.opts);
-        console.log(opt);
-        obj.$container = $(opt.container);
-        obj.$banners = obj.$container.find(opt.banner_item);
-        if(obj.$banners.length>=1) {
-            $('#'+obj.$banners.get(0).id).show();
+        var _self = this;
+        _self.settings = $.extend( true, {}, banner.defaults, options );
+        _self.currentRotator = rotator;
+        _self.init();
 
-            if(obj.$banners.length>1)
-                setTimeout(obj.run, 5000);
+    };
+    $.extend(banner,{
+        defaults:{
+            slides_container:'#slides',
+            width:330,
+            height:280,
+            duration:2,
+            onShow:null
+        },
+
+        prototype:{
+            init:function(){
+
+                var _self = this;
+                _self.current_slide = 0;
+
+                _self.slides_container = $(_self.currentRotator);
+                _self.slides = this.slides_container.find('li');
+                if(_self.slides.length>=1) {
+                    $.shuffle(_self.slides);
+                    console.log(_self.settings);
+
+                    _self.slides_container.get(0).style.width = _self.settings.width;
+                    _self.slides_container.get(0).style.height = _self.settings.height;
+                    console.log(_self.slides_container.get(0).style.width);
+                    _self.showHideBanner(0, true);
+                    if(_self.slides.length>1)
+                        setInterval(this.run.bind(this, _self), _self.settings.duration*1000);
+                }
+
+
+            },
+            run:function(o){
+
+                var _self = o;
+                _self.showHideBanner(_self.current_slide);
+                ++_self.current_slide;
+
+                if(_self.current_slide===_self.slides.length)
+                    _self.current_slide = 0;
+
+                _self.showHideBanner(_self.current_slide,true);
+            },
+
+            showHideBanner:function(n,is_show){
+
+                var _self = this;
+                is_show = is_show || false;
+                var b = $(_self.slides[n]);
+
+                if(is_show)
+                {
+                    b.fadeIn(500);
+                    if(_self.settings.onShow)
+                        _self.settings.onShow.call(_self,b);
+                }else
+                {
+                    b.fadeOut(500);
+                }
+            }
+
         }
-        else
-        {
-            obj.$container.hide();
-        }
-        //this.run();
-    };
 
-    obj.run = function()
-    {
-        console.log('run');
-        setInterval(obj.rotateBanners,5000);
-    };
-
-    obj.rotateBanners = function()
-    {
-
-        obj.showHideBanner(obj.active_banner);
-        ++obj.active_banner;
-        if(obj.active_banner===obj.$banners.length)
-            obj.active_banner=0;
-        obj.showHideBanner(obj.active_banner,true);
-    };
-    obj.showHideBanner = function(n,is_show)
-    {
-          is_show = is_show||false;
-
-        var banner = $('#'+obj.$banners.get(obj.active_banner).id);
-        if(is_show) {
-            banner.fadeIn(500);
-        }else
-        {
-            banner.fadeOut(500);
-        }
-
-    };
-
-
-})(jQuery,window.ads_rotator=window.ads_rotator||{});
+    });
+})(jQuery);
