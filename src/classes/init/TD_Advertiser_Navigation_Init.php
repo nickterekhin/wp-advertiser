@@ -25,8 +25,15 @@ class TD_Advertiser_Navigation_Init extends TD_Advertiser_Base implements INavig
     function init()
     {
         global $_menu_hooks;
-        add_menu_page('Ads Banners','Ads Banners',$this->settings->getMenuCapability(),'banners-list',array($this,'menu_handler'));
-        $_menu_hooks['banners-list'] = add_submenu_page('banners-list',__('Banners List'),__('Banners List'),$this->settings->getMenuCapability(),'banners-list',array($this,'menu_handler'));
+        $base_menu_url = 'banners-list';
+
+        add_menu_page('Ads Banners','Ads Banners',$this->settings->getMenuCapability(),$base_menu_url,array($this,'menu_handler'),'',16.5);
+        $_menu_hooks['banners-list'] = add_submenu_page($base_menu_url,__('Banners List'),__('Banners List'),$this->settings->getMenuCapability(),$base_menu_url,array($this,'menu_handler'));
+
+        $_menu_hooks['banners-add-new'] = add_submenu_page($base_menu_url,__('Add New'),__('Add New'),$this->settings->getMenuCapability(),'post-new.php?post_type=td-advertiser');
+
+        $_menu_hooks['banners-zones'] = add_submenu_page($base_menu_url,__('Ads Zones'),__('Ads Zones'),$this->settings->getMenuCapability(),'edit-tags.php?taxonomy=td_ads_zone&post_type=td-advertiser');
+
         add_action('admin_init',array($this,'admin_menu_request_handler'));
         add_action('admin_notices',array($this,'show_notifications'));
 

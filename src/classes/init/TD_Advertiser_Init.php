@@ -175,7 +175,7 @@ class TD_Advertiser_Init implements ITD_Init
             'rewrite'			=> false,
             'query_var'			=> true,
             'supports' 			=> array('title'),
-            'show_in_menu'		=> true,
+            'show_in_menu'		=> false,
             'has_archive'       => false,
 
         );
@@ -201,7 +201,7 @@ class TD_Advertiser_Init implements ITD_Init
             'labels'            => $labels,
             'public'			=>true,
             'show_ui'           => true,
-            'show_in_menu'       => true,
+            'show_in_menu'       => false,
             'query_var'          => true,
             'show_admin_column' => true,
             'show_in_nav_menus' => false,

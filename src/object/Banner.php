@@ -88,6 +88,8 @@ class Banner extends AdsObject
 
     private $zone_id;
 
+    private $post_status;
+
     /**
      * @return int
      */
@@ -391,6 +393,24 @@ class Banner extends AdsObject
     {
         $this->zone_id = $zone_id;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getPostStatus()
+    {
+        return $this->post_status;
+    }
+
+    /**
+     * @param mixed $post_status
+     */
+    public function setPostStatus($post_status)
+    {
+        $this->post_status = $post_status;
+    }
+
+
 
 
 

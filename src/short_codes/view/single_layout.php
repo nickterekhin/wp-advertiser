@@ -4,19 +4,7 @@
 use TD_Advertiser\src\object\Banner;
 
 if($banners){ ?>
-    <?php
-    $zone_width =get_term_meta($ads_zone,'width',true);
-    $zone_height = get_term_meta($ads_zone,'height',true);
-    $style = ($zone_width && $zone_height)?'style="width:'.$zone_width.';height:'.$zone_height.';margin:0 auto; overflow:hidden"':'';
-    ?>
-    <script type="text/javascript">
-        (function($){
-            $(document).ready(function(){
-                $("#zone_<?php echo $ads_zone;?>").bannerRotator({width:'<?php echo $zone_width;?>',height:'<?php echo $zone_height;?>',duration:4});
-            });
-        })(jQuery);
 
-    </script>
 
     <div id="zone_<?php echo $ads_zone?>" class="td-ads-zone-container">
         <ul id="slides" class="slides">
@@ -26,13 +14,44 @@ if($banners){ ?>
                 if($banner->getBannerAdsType()==='image') {
                     echo '<img src="'.wp_get_attachment_url($banner->getBannerCode()).'" style="width:100%;height:auto">';
                 }else {
-
                     echo $banner->getBannerCode();
                 }
                 ?>
+
             </li>
             <?php } ?>
         </ul>
     </div>
+    <script type="text/javascript">
+        (function($){
+
+
+            $(document).ready(function(){
+                var $zone = $("#zone_<?php echo $ads_zone;?>"),
+                    //width = $zone.parent().outerWidth(),
+                    opt = {
+                        //width:$zone.parent().outerWidth()+'px',
+                        //height:(width/1.2)+'px',
+                        duration:4,
+                        onShow:function(el){
+                           $.ajax({
+                                type:'POST',
+                                dataType: 'json',
+                                url:'<?php echo  admin_url('admin-ajax.php');?>',
+                                data: {
+                                    action: 'banner_show',
+                                    banner_id:el.get(0).id
+                                },
+                                success:function(data){
+                                    console.log(data);
+                                }
+                            });
+                        }
+                    };
+
+                $zone.bannerRotator(opt);
+            });
+        })(jQuery);
+    </script>
 
 <?php } ?>

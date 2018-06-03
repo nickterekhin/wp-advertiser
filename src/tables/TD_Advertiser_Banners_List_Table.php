@@ -30,10 +30,8 @@ class TD_Advertiser_Banners_List_Table extends TD_Advertiser_List_Table
             'banner_type'=>'Type',
             'show_on'=>'Show On',
             'location'=>'location',
-            'views'=>'Views',
             'price'=>'Price',
             'date_limits'=>'Date Limits',
-            'added_at'=>'Added At',
             'status'=>'Status'
         );
 
@@ -47,7 +45,14 @@ class TD_Advertiser_Banners_List_Table extends TD_Advertiser_List_Table
      */
     function column_title($item)
     {
-        return $item->getBannerTitle();
+        $status = '';
+        if($item->getPostStatus()=='draft')
+            $status = '- <b>(draft)</b>';
+        $out='<ul>';
+            $out.='<li>'.$item->getBannerTitle().' '.$status.'</li>';
+            $out.='<li><span>'.$item->getCreatedAt()->format('d-m-Y').'</span></li>';
+        $out.='</ul>';
+        return $out;
     }
 
     /**
@@ -56,7 +61,7 @@ class TD_Advertiser_Banners_List_Table extends TD_Advertiser_List_Table
      */
     function column_banner_type($item)
     {
-        return $item->getBannerAdsType();
+        return '<span>'.$item->getBannerAdsType().'</span>';
     }
 
     /**
@@ -65,8 +70,13 @@ class TD_Advertiser_Banners_List_Table extends TD_Advertiser_List_Table
      */
     function column_zone($item)
     {
-        $zones = wp_get_post_terms($item->getId(),'td_ads_zone',array('fields'=>'names'));
-        return join(', ',$zones);
+        $zones = wp_get_post_terms($item->getId(),'td_ads_zone');
+
+        $out = '<ul>';
+        $out.= '<li>'.$zones[0]->name.'</li>';
+        $out.= '<li><span>'.$zones[0]->description.'</span></li>';
+        $out.='</ul>';
+        return $out;
     }
 
     /**
@@ -75,17 +85,9 @@ class TD_Advertiser_Banners_List_Table extends TD_Advertiser_List_Table
      */
     function column_location($item)
     {
-        return ucfirst($item->getBannerPosition());
+        return '<span>'.ucfirst($item->getBannerPosition()).'</span>';
     }
 
-    /**
-     * @param Banner $item
-     * @return int
-     */
-    function column_views($item)
-    {
-        return $item->getViews();
-    }
 
     /**
      * @param Banner $item
@@ -93,7 +95,13 @@ class TD_Advertiser_Banners_List_Table extends TD_Advertiser_List_Table
      */
     function column_price($item)
     {
-        return sprintf("Rate per view %s <br> Total: %s",$item->getPricePerView(),$item->getViews()*$item->getPricePerView());
+        $out='<ul>';
+        $out.='<li><span>Views: '.$item->getViews().'</span></li>';
+        $out.='<li><span>Rate per view: '.round($item->getPricePerView()/1000,2).'</span></li>';
+        $out.='<li><span>Total: '.round($item->getViews()*$item->getPricePerView()/1000,2).'</span></li>';
+        $out.='</ul>';
+
+        return $out;
 
     }
 
@@ -105,18 +113,14 @@ class TD_Advertiser_Banners_List_Table extends TD_Advertiser_List_Table
     {
         if($item->isBannerDatesLimits())
         {
-            return sprintf('Start: %s <br> End: %s',$item->getBannerStartDate()->format('d-m-Y'),$item->getBannerEndDate()->format('d-m-Y'));
-        }
-        return 'unlimited';
-    }
+            $out='<ul>';
+            $out.='<li><span>'.$item->getBannerStartDate()->format('d-n-Y').'</span></li>';
+            $out.='<li><span>'.$item->getBannerEndDate()->format('d-n-Y').'</span></li>';
+            $out.='<ul>';
 
-    /**
-     * @param Banner $item
-     * @return mixed
-     */
-    function column_added_at($item)
-    {
-        return $item->getCreatedAt()->format('d-m-Y');
+            return $out;
+        }
+        return '<span>unlimited</span>';
     }
 
     /**
@@ -125,7 +129,19 @@ class TD_Advertiser_Banners_List_Table extends TD_Advertiser_List_Table
      */
     function column_status($item)
     {
-        return $item->isBannerStatus()?'Active':'Disabled';
+        $args=array(
+            'status'=>'Disabled',
+            'type'=>'default',
+            'action'=>'open'
+        );
+        if($item->isBannerStatus())
+        {
+            $args['status']='Active';
+            $args['type']='success';
+            $args['action']='close';
+        }
+        $url = add_query_arg(array('page'=>$_REQUEST['page'],'a'=>'state','w'=>$args['action'],'id'=>$item->getId()),admin_url('admin.php'));
+        return sprintf('<a href="%s"><span class="banner-label banner-label-%s">%s</span></a>',$url,$args['type'],$args['status']);
     }
     /**
      * @param Banner $item
@@ -133,7 +149,17 @@ class TD_Advertiser_Banners_List_Table extends TD_Advertiser_List_Table
      */
     function column_show_on($item)
     {
-        return join(',<br>',array_map(array($this,"show_on_mapper"),$item->getBannerShowOn()));
+        $res = array_map(array($this,"show_on_mapper"),$item->getBannerShowOn()?$item->getBannerShowOn():array());
+        if($res) {
+            $out = '<ul>';
+            foreach ($res as $r) {
+                $out .= '<li><span>' . $r . '</span></li>';
+            }
+            $out .= '</ul>';
+            return $out;
+        }
+
+        return '';
     }
     protected  function show_on_mapper($a)
     {
@@ -177,10 +203,11 @@ class TD_Advertiser_Banners_List_Table extends TD_Advertiser_List_Table
         $actions = array();
         $edit = add_query_arg(array('post'=>$item->getId(),'action'=>'edit'),admin_url('post.php'));
         $del = add_query_arg(array('page'=>$_REQUEST['page'],'a'=>'del','id'=>$item->getId()),admin_url('admin.php'));
-
+        $reset = add_query_arg(array('page'=>$_REQUEST['page'],'a'=>'reset','id'=>$item->getId()),admin_url('admin.php'));
 
         $actions['edit'] = sprintf('<a href="%s">%s</a>',$edit,__('Edit'));
         $actions['delete'] = sprintf('<a href="%s">%s</a>',$del,__('Delete'));
+        $actions['reset'] = sprintf('<a href="%s">%s</a',$reset,__('Reset'));
 
         return $this->row_actions($actions);
     }

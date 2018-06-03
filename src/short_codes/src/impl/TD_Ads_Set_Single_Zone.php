@@ -60,7 +60,6 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
     {
         global $wp_query;
 
-
         $obj = get_queried_object();
 
         $res = $wp_query->post;
@@ -80,13 +79,21 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
             $args['obj_id']=$obj->term_id;
         }
 
+
+        $this->params['width'] = get_term_meta($this->params['ads_zone'],'width',true);
+        $this->params['height'] = get_term_meta($this->params['ads_zone'],'height',true);
+
+
         if($this->detect_device->isMobile())
         {
             $args['show_on'] = 'mobile';
+
         }else if($this->detect_device->isTablet())
         {
             $args['show_on'] = 'tablets';
+
         }
+
         $res = $this->db->getBanners()->getMarkedBannerInZoneAndLocation($this->params['ads_zone'],$args);
 
         //set view+=1
@@ -97,11 +104,5 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
         return $this->View('single_layout',array_merge(array('obj'=>$this),$this->params));
     }
 
-    private function getMarkedBanner()
-    {
-
-
-
-    }
 
 }

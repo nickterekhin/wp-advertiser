@@ -6,6 +6,8 @@ namespace TD_Advertiser\src\short_codes\src;
 
 use Mobile_Detect;
 use TD_Advertiser\src\repository\DBContext;
+use TD_Advertiser\src\short_codes\helpers\Dimensions_Service;
+
 require_once(TD_ADVERTISER_PLUGIN_DIR.'/lib/device_detection/Mobile_Detect.php');
 
 abstract class TD_Ads_Short_Codes_Base implements ITD_Ads
@@ -21,6 +23,7 @@ abstract class TD_Ads_Short_Codes_Base implements ITD_Ads
     protected $params=array();
     protected $db;
 
+    protected $dimensions;
     protected $detect_device;
 
     /**
@@ -33,6 +36,7 @@ abstract class TD_Ads_Short_Codes_Base implements ITD_Ads
 
         $this->db=DBContext::getInstance();
         $this->detect_device = new Mobile_Detect();
+        $this->dimensions = Dimensions_Service::getInstance();
         if($short_code_category)
             $this->short_code_category = $short_code_category;
         $this->short_code_slug = $short_code_slug;
@@ -93,5 +97,9 @@ abstract class TD_Ads_Short_Codes_Base implements ITD_Ads
         return $ret_obj;
     }
 
+    public function set_banner_view($banner_id)
+    {
+        $this->db->getBanners()->setViewsById($banner_id);
+    }
 
 }

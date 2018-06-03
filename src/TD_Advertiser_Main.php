@@ -2,6 +2,7 @@
 
 
 namespace TD_Advertiser\src;
+use TD_Advertiser\src\classes\cron\TD_Advertiser_Cron;
 use TD_Advertiser\src\classes\init\TD_Advertiser_Init;
 use TD_Advertiser\src\services\TD_Ads_Class_Loader;
 
@@ -50,7 +51,7 @@ if(!class_exists('TD_Advertiser_Main')) {
         }
         function deactivate()
         {
-
+            wp_clear_scheduled_hook(TD_Advertiser_Cron::getAction());
         }
         private function init_autoloader()
         {

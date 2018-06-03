@@ -52,11 +52,12 @@
                 _self.slides = this.slides_container.find('li');
                 if(_self.slides.length>=1) {
                     $.shuffle(_self.slides);
-                    console.log(_self.settings);
 
-                    _self.slides_container.get(0).style.width = _self.settings.width;
-                    _self.slides_container.get(0).style.height = _self.settings.height;
-                    console.log(_self.slides_container.get(0).style.width);
+
+                    //_self.slides_container.get(0).style.width = _self.settings.width;
+                    //_self.slides_container.get(0).style.height = _self.settings.height;
+
+
                     _self.showHideBanner(0, true);
                     if(_self.slides.length>1)
                         setInterval(this.run.bind(this, _self), _self.settings.duration*1000);

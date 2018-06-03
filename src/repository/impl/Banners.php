@@ -81,8 +81,10 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
     function getMarkedBannerInZoneAndLocation($zone_id, $args = array())
     {
         $inner_join="   LEFT JOIN wp_postmeta pm3 ON p.ID = pm3.post_id AND pm3.meta_key='banner_start_date'
-                        LEFT JOIN wp_postmeta pm4 ON p.ID = pm4.post_id AND pm4.meta_key='banner_end_date' ";
-        $where='tr.term_taxonomy_id='.$zone_id.' AND ((pm3.meta_value <= CURDATE() AND pm4.meta_value >=CURDATE()) OR (pm3.meta_value Is NULL OR pm4.meta_value Is NULL))';
+                        LEFT JOIN wp_postmeta pm4 ON p.ID = pm4.post_id AND pm4.meta_key='banner_end_date'
+                        INNER JOIN wp_postmeta pm5 ON p.ID = pm5.post_id AND pm5.meta_key = 'banner_status'";
+
+        $where="tr.term_taxonomy_id=".$zone_id." AND pm5.meta_value='active' AND ((pm3.meta_value <= CURDATE() AND pm4.meta_value >=CURDATE()) OR (pm3.meta_value Is NULL OR pm4.meta_value Is NULL))";
             switch($args['location'])
             {
                 case 'single':
@@ -128,11 +130,18 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
         return $banners;
     }
 
-    function setViewsById($banner_id)
+    function setViewsById($banner_id,$reset=false)
     {
-        $views = get_post_meta($banner_id,'banner_views',true);
-        $views+=1;
-        update_post_meta($banner_id,'banner_views',$views);
+        if($reset)
+        {
+            update_post_meta($banner_id, 'banner_views', 0);
+        }
+        else
+        {
+            $views = get_post_meta($banner_id, 'banner_views', true);
+            $views += 1;
+            update_post_meta($banner_id, 'banner_views', $views);
+        }
     }
 
     function moveMarker($current_banner_id)
@@ -144,6 +153,12 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
             update_post_meta($banner->getId(),'banner_view_marker',1);
         }
     }
+
+    function setStatus($id, $state)
+    {
+        update_post_meta($id,'banner_status',$state);
+    }
+
 
     function getNextBanner($zone_id,$create_date)
     {
@@ -175,6 +190,16 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
         return null;
     }
 
+    function cleanBanners()
+    {
+        $this->db->query("UPDATE wp_posts  as p
+INNER JOIN wp_postmeta pm4 ON p.ID = pm4.post_id AND pm4.meta_key='banner_end_date'
+INNER JOIN wp_postmeta pm5 ON p.ID = pm5.post_id AND pm5.meta_key = 'banner_status'
+SET pm5.meta_value = 0
+WHERE p.post_type='td-advertiser' AND pm5.meta_value=1
+AND pm4.meta_value < CURDATE() AND pm4.meta_value Is NOT NULL");
+    }
+
 
     /**
      * @param WP_Post $res
@@ -183,6 +208,7 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
     protected function mapping($res)
     {
         $banners = new Banner();
+        $banners->setPostStatus($res->post_status);
         $banners->setId($res->ID);
         $banners->setBannerTitle($res->post_title);
         $banners->setCreatedAt(new DateTime($res->post_date));

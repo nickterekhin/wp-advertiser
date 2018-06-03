@@ -16,7 +16,9 @@ abstract class TD_Advertiser_Base
 
     private $default_actions = array(
         'del',
-        'add'
+        'add',
+        'reset',
+        'state'
     );
 
     /**
