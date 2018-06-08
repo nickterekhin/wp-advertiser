@@ -227,6 +227,7 @@ AND pm4.meta_value < CURDATE() AND pm4.meta_value Is NOT NULL");
         $banners->setBannerStatus(get_field('banner_status',$res->ID));
         $banners->setPricePerView(get_field('banner_price_per_view',$res->ID));
         $banners->setViews(get_field('banner_views',$res->ID));
+        $banners->setUrlAds(get_field('ads_link',$res->ID));
         $banners->setZoneId($res->zone_id);
         return $banners;
     }

@@ -90,6 +90,8 @@ class Banner extends AdsObject
 
     private $post_status;
 
+    private $url_ads;
+
     /**
      * @return int
      */
@@ -408,6 +410,22 @@ class Banner extends AdsObject
     public function setPostStatus($post_status)
     {
         $this->post_status = $post_status;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUrlAds()
+    {
+        return $this->url_ads;
+    }
+
+    /**
+     * @param mixed $url_ads
+     */
+    public function setUrlAds($url_ads)
+    {
+        $this->url_ads = $url_ads;
     }
 
 

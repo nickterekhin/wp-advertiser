@@ -12,7 +12,7 @@ if($banners){ ?>
             <li id="<?php echo $banner->getId(); ?>">
                 <?php
                 if($banner->getBannerAdsType()==='image') {
-                    echo '<img src="'.wp_get_attachment_url($banner->getBannerCode()).'" style="width:100%;height:auto">';
+                    echo '<a href="'.$banner->getUrlAds().'" style="outline:none"><img src="'.wp_get_attachment_url($banner->getBannerCode()).'" style="width:100%;height:auto"></a>';
                 }else {
                     echo $banner->getBannerCode();
                 }
