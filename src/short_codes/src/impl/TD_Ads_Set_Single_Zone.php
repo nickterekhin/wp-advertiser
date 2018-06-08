@@ -97,7 +97,6 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
             $args['show_on'] = 'tablets';
 
         }
-        var_dump($args);
         $res = $this->db->getBanners()->getMarkedBannerInZoneAndLocation($this->params['ads_zone'],$args);
 
         //set view+=1
