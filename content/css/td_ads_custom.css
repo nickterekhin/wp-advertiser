@@ -2,9 +2,19 @@
   position: relative;
   margin: 5px auto;
   overflow: hidden;
-  display: block;
-  width: 336px;
-  height: 280px; }
+  display: block; }
+  .td-ads-zone-container.square_ads_zone {
+    width: 336px;
+    height: 280px; }
+    .td-ads-zone-container.square_ads_zone .custom_ads_css {
+      width: 336px;
+      height: 280px; }
+  .td-ads-zone-container.horizontal_ads_zone {
+    width: 728px;
+    height: 90px; }
+    .td-ads-zone-container.horizontal_ads_zone .custom_ads_css {
+      width: 728px;
+      height: 90px; }
   .td-ads-zone-container .slides {
     list-style: none;
     margin: 0;
@@ -12,44 +22,41 @@
     .td-ads-zone-container .slides li {
       position: absolute;
       visibility: visible; }
-  .td-ads-zone-container .custom_ads_css {
-    width: 336px;
-    height: 280px; }
 
 /*Square ads*/
 @media only screen and (max-width: 1366px) {
-  .td-ads-zone-container {
+  .td-ads-zone-container.square_ads_zone {
     width: 250px;
     height: 210px; }
-    .td-ads-zone-container .custom_ads_css {
+    .td-ads-zone-container.square_ads_zone .custom_ads_css {
       width: 250px;
       height: 210px; } }
 @media only screen and (max-width: 1280px) {
-  .td-ads-zone-container {
+  .td-ads-zone-container.square_ads_zone {
     width: 250px;
     height: 210px; }
-    .td-ads-zone-container .custom_ads_css {
+    .td-ads-zone-container.square_ads_zone .custom_ads_css {
       width: 250px;
       height: 210px; } }
 @media only screen and (max-width: 1024px) {
-  .td-ads-zone-container {
+  .td-ads-zone-container.square_ads_zone {
     width: 215px;
     height: 180px; }
-    .td-ads-zone-container .custom_ads_css {
+    .td-ads-zone-container.square_ads_zone .custom_ads_css {
       width: 215px;
       height: 180px; } }
 @media only screen and (max-width: 768px) {
-  .td-ads-zone-container {
+  .td-ads-zone-container.square_ads_zone {
     width: 336px;
     height: 280px; }
-    .td-ads-zone-container .custom_ads_css {
+    .td-ads-zone-container.square_ads_zone .custom_ads_css {
       width: 336px;
       height: 280px; } }
 @media only screen and (max-width: 700px) {
-  .td-ads-zone-container {
+  .td-ads-zone-container.square_ads_zone {
     width: 300px;
     height: 250px; }
-    .td-ads-zone-container .custom_ads_css {
+    .td-ads-zone-container.square_ads_zone .custom_ads_css {
       width: 300px;
       height: 250px; } }
 /*Square ads end*/

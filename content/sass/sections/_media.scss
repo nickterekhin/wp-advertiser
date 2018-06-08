@@ -2,53 +2,63 @@
 /*Square ads*/
 @media only screen and (max-width:1366px){
   .td-ads-zone-container{
-    width:250px;
-    height:210px;
-    .custom_ads_css{
-      width:250px;
-      height:210px;
+    &.square_ads_zone {
+      width: 250px;
+      height: 210px;
+      .custom_ads_css {
+        width: 250px;
+        height: 210px;
+      }
     }
   }
 }
 @media only screen and (max-width:1280px){
   .td-ads-zone-container{
-    width:250px;
-    height:210px;
-    .custom_ads_css{
-      width:250px;
-      height:210px;
+    &.square_ads_zone {
+      width: 250px;
+      height: 210px;
+      .custom_ads_css {
+        width: 250px;
+        height: 210px;
+      }
     }
   }
 }
 @media only screen and (max-width:1024px){
   .td-ads-zone-container{
-    width:215px;
-    height:180px;
-    .custom_ads_css{
-      width:215px;
-      height:180px;
+    &.square_ads_zone {
+      width: 215px;
+      height: 180px;
+      .custom_ads_css {
+        width: 215px;
+        height: 180px;
+      }
     }
   }
 }
 
 @media only screen and (max-width:768px){
   .td-ads-zone-container{
-    width:336px;
-    height:280px;
-    .custom_ads_css{
-      width:336px;
-      height:280px;
+    &.square_ads_zone {
+      width: 336px;
+      height: 280px;
+      .custom_ads_css {
+        width: 336px;
+        height: 280px;
+      }
     }
   }
 }
 
 @media only screen and (max-width:700px){
   .td-ads-zone-container{
-    width:300px;
-    height:250px;
-    .custom_ads_css{
-      width:300px;
-      height:250px;
+    &.square_ads_zone {
+      width: 300px;
+      height: 250px;
+      .custom_ads_css {
+        width: 300px;
+        height: 250px;
+      }
     }
   }
 }

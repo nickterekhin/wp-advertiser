@@ -5,8 +5,22 @@
   margin:5px auto;
   overflow: hidden;
   display: block;
-  width:336px;
-  height:280px;
+  &.square_ads_zone{
+    width:336px;
+    height:280px;
+    .custom_ads_css{
+      width:336px;
+      height:280px;
+    }
+  }
+  &.horizontal_ads_zone{
+    width:728px;
+    height:90px;
+    .custom_ads_css{
+      width:728px;
+      height:90px;
+    }
+  }
   .slides{
     list-style: none;
     margin:0;
@@ -17,9 +31,6 @@
 
     }
   }
-  .custom_ads_css{
-    width:336px;
-    height:280px;
-  }
+
 }
 
