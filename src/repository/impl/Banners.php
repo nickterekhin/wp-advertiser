@@ -80,16 +80,23 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
 
     function getMarkedBannerInZoneAndLocation($zone_id, $args = array())
     {
+        $banners = array();
+        if(!$zone_id) return $banners;
+
         $inner_join="   LEFT JOIN wp_postmeta pm3 ON p.ID = pm3.post_id AND pm3.meta_key='banner_start_date'
                         LEFT JOIN wp_postmeta pm4 ON p.ID = pm4.post_id AND pm4.meta_key='banner_end_date'
                         INNER JOIN wp_postmeta pm5 ON p.ID = pm5.post_id AND pm5.meta_key = 'banner_status'";
 
-        $where="tr.term_taxonomy_id=".$zone_id." AND pm5.meta_value='active' AND ((pm3.meta_value <= CURDATE() AND pm4.meta_value >=CURDATE()) OR (pm3.meta_value Is NULL OR pm4.meta_value Is NULL))";
+        $where="tr.term_taxonomy_id=".$zone_id." AND pm5.meta_value=1 AND ((pm3.meta_value <= CURDATE() AND pm4.meta_value >=CURDATE()) OR (pm3.meta_value Is NULL OR pm4.meta_value Is NULL))";
             switch($args['location'])
             {
                 case 'single':
                     $inner_join .= " INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'";
                     $where .=" AND (pm.meta_value='single' OR pm.meta_value='all')";
+                    break;
+                case 'home':
+                    $inner_join .= " INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'";
+                    $where .=" AND (pm.meta_value='home' OR pm.meta_value='all')";
                     break;
                 case 'page':
                     $inner_join .= "
@@ -99,7 +106,7 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
                     $where .=" AND ((pm.meta_value='page' AND pm1.meta_value=".$args['obj_id'].") OR pm.meta_value='all')";
                     break;
                 case 'category':
-                    $inner_join = "
+                    $inner_join .= "
                     INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'
                     LEFT JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_category'
                     ";
@@ -117,10 +124,10 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
         $sql = "SELECT p.*,tr.term_taxonomy_id as zone_id FROM wp_posts p ".$inner_join."
 
         INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id WHERE ".$where." ORDER BY pm.meta_key DESC, p.post_date DESC";
-        //print_r($sql);
+
         $res = $this->db->get_results($sql);
 
-        $banners = array();
+
 
             foreach ($res as $r) {
                 $banners[] = $this->mapping($r);
