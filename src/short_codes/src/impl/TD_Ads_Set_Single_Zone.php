@@ -64,7 +64,12 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
 
         $res = $wp_query->post;
         $args = array('location'=>'all','show_on'=>'desktop');
-        if($obj instanceof WP_Post && $obj->post_type=='page')
+
+        if($obj instanceof WP_Post && $obj->post_type=='page' && is_front_page())
+        {
+            $args['location']='home';
+        }
+        elseif($obj instanceof WP_Post && $obj->post_type=='page')
         {
             $args['location']='page';
             $args['obj_id']=$res->ID;
@@ -73,16 +78,11 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
         {
             $args['location']='single';
         }
-        elseif($obj instanceof WP_Post && is_single($res->ID) && is_front_page())
-        {
-            $args['location']='home';
-        }
         elseif($obj instanceof WP_Term && $obj->taxonomy=='category')
         {
             $args['location']='category';
             $args['obj_id']=$obj->term_id;
         }
-
 
         $this->params['width'] = get_term_meta($this->params['ads_zone'],'width',true);
         $this->params['height'] = get_term_meta($this->params['ads_zone'],'height',true);
@@ -97,7 +97,7 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
             $args['show_on'] = 'tablets';
 
         }
-
+        var_dump($args);
         $res = $this->db->getBanners()->getMarkedBannerInZoneAndLocation($this->params['ads_zone'],$args);
 
         //set view+=1
