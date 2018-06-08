@@ -6,7 +6,7 @@ use TD_Advertiser\src\object\Banner;
 if($banners){ ?>
 
 
-    <div id="zone_<?php echo $ads_zone?>" class="td-ads-zone-container">
+    <div id="zone_<?php echo $ads_zone?>" class="td-ads-zone-container <?php echo $custom_css_class;?>">
         <ul id="slides" class="slides">
             <?php foreach($banners as $banner){ ?>
             <li id="<?php echo $banner->getId(); ?>">

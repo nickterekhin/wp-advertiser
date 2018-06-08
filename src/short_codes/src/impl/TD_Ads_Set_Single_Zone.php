@@ -87,6 +87,7 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
         $this->params['width'] = get_term_meta($this->params['ads_zone'],'width',true);
         $this->params['height'] = get_term_meta($this->params['ads_zone'],'height',true);
 
+        $this->params['custom_css_class'] = get_term_meta($this->params['ads_zone'],'custom_css_class',true);
 
         if($this->detect_device->isMobile())
         {
