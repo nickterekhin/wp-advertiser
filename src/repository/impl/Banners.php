@@ -123,7 +123,7 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
 
         $sql = "SELECT p.*,tr.term_taxonomy_id as zone_id FROM wp_posts p ".$inner_join."
 
-        INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id WHERE ".$where." ORDER BY pm.meta_key DESC, p.post_date DESC";
+        INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id WHERE ".$where." ORDER BY p.post_date DESC";
 
         $res = $this->db->get_results($sql);
 
