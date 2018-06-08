@@ -73,6 +73,10 @@ class TD_Ads_Set_Single_Zone extends TD_Ads_Short_Codes_Base
         {
             $args['location']='single';
         }
+        elseif($obj instanceof WP_Post && is_single($res->ID) && is_front_page())
+        {
+            $args['location']='home';
+        }
         elseif($obj instanceof WP_Term && $obj->taxonomy=='category')
         {
             $args['location']='category';
