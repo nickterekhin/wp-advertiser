@@ -92,25 +92,25 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
             {
                 case 'single':
                     $inner_join .= " INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'";
-                    $where .=" AND (pm.meta_value='single' OR pm.meta_value='all')";
+                    $where .=" AND (pm.meta_value='".$args['location']."' OR pm.meta_value='all')";
                     break;
                 case 'home':
                     $inner_join .= " INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'";
-                    $where .=" AND (pm.meta_value='home' OR pm.meta_value='all')";
+                    $where .=" AND (pm.meta_value='".$args['location']."' OR pm.meta_value='all')";
                     break;
                 case 'page':
                     $inner_join .= "
                     INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'
                     LEFT JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_page'
                     ";
-                    $where .=" AND ((pm.meta_value='page' AND pm1.meta_value=".$args['obj_id'].") OR pm.meta_value='all')";
+                    $where .=" AND ((pm.meta_value='".$args['location']."' AND pm1.meta_value=".$args['obj_id'].") OR pm.meta_value='all')";
                     break;
                 case 'category':
                     $inner_join .= "
                     INNER JOIN wp_postmeta pm ON p.ID = pm.post_id AND pm.meta_key = 'banner_position'
                     LEFT JOIN wp_postmeta pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'banner_category'
                     ";
-                    $where .=" AND ((pm.meta_value='page' AND pm1.meta_value=".$args['obj_id'].") OR pm.meta_value='all')";
+                    $where .=" AND ((pm.meta_value='".$args['location']."' AND pm1.meta_value=".$args['obj_id'].") OR pm.meta_value='all')";
                     break;
             }
 
@@ -120,14 +120,10 @@ WHERE pm.meta_value = 1 AND tr.term_taxonomy_id=%d",$zone_id);
                 $where .= " AND pm2.meta_value LIKE '%".$args['show_on']."%'";
             }
 
-
         $sql = "SELECT p.*,tr.term_taxonomy_id as zone_id FROM wp_posts p ".$inner_join."
-
         INNER JOIN wp_term_relationships tr ON p.ID = tr.object_id WHERE ".$where." ORDER BY p.post_date DESC";
 
         $res = $this->db->get_results($sql);
-
-
 
             foreach ($res as $r) {
                 $banners[] = $this->mapping($r);
