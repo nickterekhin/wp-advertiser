@@ -37,7 +37,13 @@
     height: 210px; }
     .td-ads-zone-container.square_ads_zone .custom_ads_css {
       width: 250px;
-      height: 210px; } }
+      height: 210px; }
+  .td-ads-zone-container.horizontal_ads_zone {
+    width: 468px;
+    height: 60px; }
+    .td-ads-zone-container.horizontal_ads_zone .custom_ads_css {
+      width: 468px;
+      height: 60px; } }
 @media only screen and (max-width: 1024px) {
   .td-ads-zone-container.square_ads_zone {
     width: 215px;

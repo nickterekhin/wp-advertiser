@@ -22,6 +22,14 @@
         height: 210px;
       }
     }
+    &.horizontal_ads_zone{
+      width:468px;
+      height:60px;
+      .custom_ads_css{
+        width:468px;
+        height:60px;
+      }
+    }
   }
 }
 @media only screen and (max-width:1024px){
