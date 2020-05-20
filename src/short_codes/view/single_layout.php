@@ -32,21 +32,7 @@ if($banners){ ?>
                     opt = {
                         //width:$zone.parent().outerWidth()+'px',
                         //height:(width/1.2)+'px',
-                        duration:4,
-                        onShow:function(el){
-                           $.ajax({
-                                type:'POST',
-                                dataType: 'json',
-                                url:'<?php echo  admin_url('admin-ajax.php');?>',
-                                data: {
-                                    action: 'banner_show',
-                                    banner_id:el.get(0).id
-                                },
-                                success:function(data){
-                                    console.log(data);
-                                }
-                            });
-                        }
+                        duration:4
                     };
 
                 $zone.bannerRotator(opt);

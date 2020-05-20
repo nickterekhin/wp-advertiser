@@ -39,7 +39,7 @@
         var tableState =table_api.state.loaded();
         $.each(filters,function(i,v){
             var el = $("#"+ v.id);
-
+bunner
             el.on('change',function(){
                 var val = this.value;
                 table_api.columns(v.column).search(val?'(,|^)'+val+'(,|$)':'',true,false).draw();
